@@ -1,126 +1,136 @@
 # Intelligent Route-Planning Agent
 
-SOFE 3720U Group 2: a Python simulation comparing UCS, Greedy Best-First Search
-and A* on generated weighted road networks.
+SOFE 3720U Group 2 school project. We will compare Uniform Cost Search,
+Greedy Best-First Search and A* on randomly generated road networks.
 
-## Current status
+## Getting started
 
-**Starter scaffold, not a completed agent.** Shared models, a dispatcher, an
-example graph and contract checks are implemented. Map generation, searches,
-Euclidean heuristic, GUI, experiments and analysis are explicitly TODO and raise
-NotImplementedError until their owners implement them. Test-file TODOs are not
-completed tests. No performance results have been collected.
-
-## Setup
-
-Use Python 3.11. From the repository root:
+Use Python 3.11 and run from this folder:
 
 ```bash
-python -m venv .venv
+python main.py
 ```
 
-Activate with `.venv\Scripts\activate` on Windows, or
-`source .venv/bin/activate` on macOS/Linux. Then:
+This is a starter project. Running main.py currently prints a status message.
+The maps, algorithms, interface and experiments are still TODO. Unfinished
+functions raise NotImplementedError instead of returning made-up results.
+Only Python's standard library is needed for now. We can use Tkinter for the
+interface; it may need to be installed separately on Linux. Add a requirements.txt
+later if we choose an external plotting library.
 
-```bash
-python -m pip install -r requirements.txt
-python main.py --status
-python -m unittest discover -v
-```
+## Who does what
 
-`python main.py` will launch the UI after Member 4 implements it; currently it
-prints a clear pending-implementation message and exits with code 2.
-Tkinter is included in many Python installations; Linux may need an OS package.
-
-## Architecture
-
-```mermaid
-flowchart TD
-    UI[UI and drawing] --> GEN[Map generator]
-    UI --> API[Search dispatcher]
-    EXP[Experiment runner] --> GEN
-    EXP --> API
-    API --> ALG[UCS Greedy and A star]
-    ALG --> H[Heuristics]
-    GEN --> M[Shared models]
-    ALG --> M
-```
-
-UI and experiments call `run_search` from `search.py`. Each algorithm accepts a
-Graph and returns SearchResult. The UI owns all drawing; batch experiments run
-without a display. See CONTRIBUTING.md for the common rules.
-
-## File ownership
-
-Member labels remain placeholders until the group assigns names.
-
-| Files | Owner | Deliverable |
+| File | Owner | Work |
 | --- | --- | --- |
-| models.py | Member 2, team-reviewed contracts | Shared types and dataclasses |
-| map_generator.py | Member 2 | Validated reproducible maps |
-| configs/experiments.json | Member 2 | Reusable experiment conditions |
-| algorithms/astar.py, heuristics.py | Gaetano | A* and heuristics |
-| search.py, README.md | Gaetano | Dispatcher, architecture and coordination |
-| algorithms/ucs.py, algorithms/common.py | Member 3 | UCS and shared reconstruction |
-| experiments.py, analyse_results.py | Member 3 | CSV automation and baseline charts |
-| algorithms/greedy.py | Member 4 | Greedy search |
-| ui.py, visualization.py, main.py | Member 4 | Controls, display and application entry |
-| requirements.txt, .gitignore | Member 4 | Dependencies and exclusions |
-| tests/test_astar.py, tests/test_heuristics.py | Gaetano | Own component tests |
-| tests/test_map_generator.py | Member 2 | Map tests |
-| tests/fixtures.py, tests/test_ucs.py, tests/test_contracts.py | Member 3 | Baseline and shared fixtures |
-| tests/test_search_correctness.py, tests/test_integration.py | Member 3 | Shared checks and integration |
-| tests/test_greedy.py | Member 4 | Greedy tests and manual UI acceptance |
+| main.py | Member 4 | Controls, map drawing and result display |
+| map_generator.py | Member 2 | Generate and check the road network |
+| ucs.py | Member 3 | Uniform Cost Search |
+| greedy.py | Member 4 | Greedy Best-First Search |
+| astar.py | Gaetano | A* and heuristic functions |
+| experiments.py | Member 3 | Run comparisons, save CSV and make initial charts |
+| README.md | Everyone | Setup, roles and shared rules |
 
-Each owner integrates and repairs their own component. All members contribute
-to analysis, charts, review and presentations. Gaetano coordinates integration.
+Gaetano coordinates how the files connect. Each person tests, connects and fixes
+their own code. Everyone helps analyse results and prepare the presentation.
+Replace Member 2–4 with names when the group assigns them. Redistribute remaining
+work if one role takes substantially longer. Keep the interface simple.
 
-## Shared vocabulary and contracts
+## How the files connect
 
-| Name | Meaning |
-| --- | --- |
-| graph | Complete fixed road network |
-| node / node_id | Integer intersection ID |
-| position | Coordinate tuple |
-| edge_cost | Cost of one road |
-| neighbour | Directly connected node |
-| start / goal | Initial node / destination |
-| path / cost | Ordered route / summed road costs |
-| g_score | Best known cost from start |
-| heuristic / h_value | Estimated remaining cost |
-| frontier / priority | Candidate queue / selection value |
-| came_from | Predecessors for reconstruction |
-| nodes_expanded | Valid non-goal expansions, excluding stale entries |
-| execution_time | Search duration in seconds |
-| instance_id / seed | Fixed problem identifier / generation seed |
+main.py calls generate_map and then the chosen search function. It draws the
+returned path and shows the metrics. experiments.py calls the same functions
+without opening the interface. Greedy imports straight_line_distance from
+astar.py so the two algorithms use the same estimate. astar.py does not import
+main.py or greedy.py. No separate models or dispatcher are needed.
 
-Public interface:
+## The map dictionary
+
+All files use this format. This is a small valid example:
 
 ```python
-generate_map(config) -> Graph
-ucs(graph, start, goal) -> SearchResult
-greedy(graph, start, goal, heuristic) -> SearchResult
-astar(graph, start, goal, heuristic) -> SearchResult
-run_search(graph, start, goal, algorithm, heuristic="euclidean") -> SearchResult
+graph = {
+    "positions": {0: (0, 0), 1: (3, 0), 2: (3, 4)},
+    "roads": {
+        0: {1: 3.0, 2: 7.0},
+        1: {0: 3.0, 2: 4.0},
+        2: {0: 7.0, 1: 4.0},
+    },
+}
 ```
 
-Algorithms: `ucs`, `greedy`, `astar`. Heuristics: `euclidean`, `zero`.
-UCS ignores heuristic selection; record `none` for it in CSV.
-Models and exact typed function signatures are in the source files.
+A node is an intersection. Its position is its (x, y) coordinate. A road is an
+edge and its value is the travel cost. Roads go both ways with the same cost.
+Every node appears in both dictionaries, even if it has no roads. Coordinates
+must be unique and finite; costs must be finite and positive. A road's cost is
+its straight-line length multiplied by a factor of at least 1. This makes the
+straight-line heuristic a valid lower bound. Crossing road lines only connect
+if the graph explicitly includes an intersection there.
 
-## Implementation order
+Use graph["positions"][node] for coordinates and graph["roads"][node].items()
+for neighbours and costs. Do not change the graph while searching.
 
-1. Confirm models together. Use tests/fixtures.py while maps are being built.
-2. Implement owned components against those contracts. UI can use a clearly
-   labelled mock SearchResult during development, never as an experimental result.
-3. Add correctness tests and integrate components; owners resolve their defects.
-4. Automate controlled experiments using configs/experiments.json and export
-   the fields in experiments.CSV_FIELDS to results/.
-5. Analyse costs, expansions, success rates and timing variation; explain why.
+## Search inputs and results
 
-The JSON is an initial plan, not a claim that its runner or start/goal policy
-is implemented. Test reachable and unreachable instances, near/far pairs,
-different sizes/densities/cost variation, and A* zero versus Euclidean.
+```python
+ucs(graph, start, goal)
+greedy(graph, start, goal)
+astar(graph, start, goal, use_heuristic=True)
+```
+
+Every algorithm returns the same dictionary:
+
+```python
+result = {
+    "path": [0, 1, 2],
+    "cost": 7.0,
+    "nodes_expanded": 2,
+    "execution_time": 0.001,
+    "success": True,
+}
+```
+
+This result is illustrative, not a measured run. Path means an ordered list of
+nodes; cost means the sum of its road costs. If no route exists, return an empty
+path, float("inf") for cost and success=False. If start equals goal, return
+[start], zero cost, zero expansions and success=True. Invalid node IDs or
+settings raise ValueError.
+
+Count an expansion when a valid non-goal node's neighbours are examined. Do not
+count stale queue entries or the goal; count another expansion if a node is
+reopened. Measure search setup, search and reconstruction with time.perf_counter
+in seconds, excluding map generation, drawing and writing results.
+
+## Terms and simple coding rules
+
+- Use snake_case names, four spaces and short comments explaining tricky parts.
+- start and goal are node IDs; neighbour is a connected node.
+- frontier is the priority queue; came_from stores each node's parent.
+- g_score stores best costs from the start; heuristic estimates remaining cost.
+- UCS uses cost so far, Greedy uses the estimate, and A* uses their sum.
+- Use heapq for queues. Sort neighbours and use a counter for consistent ties.
+- UCS/A* update costs and parents only for cheaper paths and skip stale records.
+  Check for the goal after removing a valid queue entry, not on first discovery.
+- Use random.Random(seed) to reproduce maps. Keep costs unrounded internally.
+- Write the primary search logic ourselves. Supporting drawing/CSV libraries are OK.
+- Keep printing, controls and drawing in main.py, outside the search functions.
+- Use a branch for your task. Ask a teammate to review before merging and discuss
+  shared format changes before changing other people's code.
+
+## Testing and experiments
+
+Start with hand-written maps where the answer is known. Check every returned
+road and add up the cost. UCS and A* should return the optimal cost; equal-cost
+paths may differ. Compare floats with math.isclose. Greedy only needs a valid
+route. Check cycles, cheaper routes with more edges, disconnected goals,
+isolated nodes, start=goal and invalid input. Each owner checks their own code;
+Member 3 coordinates comparisons.
+
+Vary graph size, road density, road-cost variation and start/goal distance. Use
+several seeds, hold the graph and start/goal fixed across algorithms, and repeat
+timings. Record seed, map settings, start, goal, algorithm, heuristic mode, cost,
+nodes_expanded, execution_time and success in CSV. Keep results in results/.
+Compare A* with and without its heuristic. Report failures separately from costs
+of successful routes, and explain the trade-off between search effort and cost.
 
 Progress presentation: week of October 19, 2026. Final presentation and separate
-demonstration: week of November 30, 2026, according to the supplied handout.
+demonstration: week of November 30, 2026, according to the project handout.

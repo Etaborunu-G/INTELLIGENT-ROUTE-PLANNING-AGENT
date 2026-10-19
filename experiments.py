@@ -1,17 +1,19 @@
-"""Owner: Member 3. Controlled batch execution and CSV export."""
-from pathlib import Path
+"""Member 3: run comparisons, save CSV measurements and make charts.
+Everyone helps interpret the results.
+"""
+from map_generator import generate_map
+from ucs import ucs
+from greedy import greedy
+from astar import astar
 
-CSV_FIELDS = (
-    "instance_id", "seed", "num_nodes", "edge_probability", "coordinate_limit",
-    "min_cost_multiplier", "max_cost_multiplier", "start", "goal", "algorithm",
-    "heuristic", "repeat", "success", "cost", "nodes_expanded", "execution_time",
-)
+
+def run_experiments():
+    # TODO: change one setting at a time and repeat across several seeds.
+    # Generate each graph once; reuse it and its start/goal for all algorithms.
+    # Compare UCS, Greedy, A*, and A* with use_heuristic=False.
+    # Save settings, seed, start, goal, algorithm and result metrics to CSV.
+    raise NotImplementedError("Member 3: implement the experiments")
 
 
-def run_experiments(config_path: Path, output_path: Path) -> None:
-    """TODO: load JSON, build each instance once, run all algorithms, save CSV.
-
-    Warm up before timed repeats. Exclude generation/drawing from search time.
-    Record unreachable instances normally and input errors separately.
-    """
-    raise NotImplementedError("Member 3: implement experiment runner")
+if __name__ == "__main__":
+    run_experiments()

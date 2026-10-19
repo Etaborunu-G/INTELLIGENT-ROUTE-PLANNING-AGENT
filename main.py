@@ -1,19 +1,14 @@
-"""Owner: Member 4. Application entry point."""
-import argparse
-from ui import launch_app
+"""Member 4: input controls, map drawing and results."""
+from map_generator import generate_map
+from ucs import ucs
+from greedy import greedy
+from astar import astar
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Intelligent Route-Planning Agent")
-    parser.add_argument("--status", action="store_true", help="Show scaffold status")
-    args = parser.parse_args()
-    if args.status:
-        print("Starter scaffold ready. Algorithms, maps and UI are TODO.")
-        return
-    try:
-        launch_app()
-    except NotImplementedError as error:
-        parser.exit(2, f"Not implemented yet: {error}\n")
+def main():
+    # TODO: make a simple interface to generate a map and select start/goal.
+    # Call the selected algorithm, then draw its path and show the results.
+    print("Project files are ready. The map, searches and interface still need implementation.")
 
 
 if __name__ == "__main__":

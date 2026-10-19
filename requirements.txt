@@ -1,4 +1,0 @@
-# Runtime scaffold uses the Python standard library only.
-# Tkinter may need an OS package on Linux; it is not installed with pip.
-# Member 4: record UI dependencies if the team changes interface tools.
-# Member 3: add plotting dependencies when implementing chart generation.
