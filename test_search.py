@@ -2,6 +2,7 @@
 
 from astar import astar
 from greedy import greedy
+from ucs import ucs
 
 
 # Map 1: Only one route exists.
@@ -72,8 +73,14 @@ for i in range(3):
         print("Seconds:", result["execution_time"])
     else:
         print("Execution time: FAIL — missing or negative")
-        
+
     actual = (result["path"], result["cost"], result["success"])
     print("Greedy:", "PASS" if actual == expected_greedy[i] else "FAIL")
     print("Expected:", expected_greedy[i])
+    print("Actual:  ", actual)
+
+    result = ucs(maps[i], 0, 2)
+    actual = (result["path"], result["cost"], result["success"])
+    print("UCS:", "PASS" if actual == expected_astar[i] else "FAIL")
+    print("Expected:", expected_astar[i])
     print("Actual:  ", actual)
