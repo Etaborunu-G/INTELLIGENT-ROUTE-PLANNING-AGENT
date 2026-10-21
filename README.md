@@ -23,7 +23,7 @@ later if we choose an external plotting library.
 | File | Owner | Work |
 | --- | --- | --- |
 | main.py | Gaetano | Controls, map drawing and result display |
-| map_generator.py | Member 2 | Generate and check the road network |
+| map_generator.py | Leela | Generate and check the road network |
 | ucs.py | Member 3 | Uniform Cost Search |
 | greedy.py | Inshal | Greedy Best-First Search |
 | astar.py | Gaetano | A* and heuristic functions |
