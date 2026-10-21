@@ -10,18 +10,18 @@ def straight_line_distance(graph, node, goal):
     x1, y1 = graph["positions"][node]
     x2, y2 = graph["positions"][goal]
 
-    return math.hypot(x2 - x1, y2 - y1)
+    return math.hypot(x2 - x1, y2 - y1)  #Straight line heuristic calculation using Pythagorean theorem
 
 
 def astar(graph, start, goal, use_heuristic=True):
     """Find a minimum-cost route using A* search."""
-    start_time = time.perf_counter()
+    start_time = time.perf_counter() # Record the start time
 
     if start not in graph["roads"] or goal not in graph["roads"]:
-        raise ValueError("Start and goal must exist in the graph.")
+        raise ValueError("Start and goal must exist in the graph.") #if start node or goal does not exist, error
 
     frontier = []
-    counter = itertools.count()
+    counter = itertools.count() # Counter for tie-breaking
     came_from = {}
     g_score = {start: 0.0}
     nodes_expanded = 0
